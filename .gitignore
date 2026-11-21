@@ -1,0 +1,10 @@
+.env
+service-account.json
+*.session
+*.session-journal
+__pycache__/
+*.py[cod]
+downloads/
+data/
+.venv/
+venv/
