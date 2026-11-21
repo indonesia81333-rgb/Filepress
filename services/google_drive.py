@@ -9,10 +9,8 @@ from googleapiclient.http import MediaFileUpload
 
 SCOPES = ["https://www.googleapis.com/auth/drive"]
 
-
 class GoogleDriveError(RuntimeError):
     pass
-
 
 def _service(credentials_file: str):
     path = Path(credentials_file)
@@ -25,7 +23,6 @@ def _service(credentials_file: str):
         str(path), scopes=SCOPES
     )
     return build("drive", "v3", credentials=credentials, cache_discovery=False)
-
 
 def upload_file(
     file_path: Path,
@@ -52,6 +49,7 @@ def upload_file(
             fields="id,name,size,webViewLink",
             supportsAllDrives=True,
         )
+
         response = None
         while response is None:
             status, response = request.next_chunk(num_retries=5)
@@ -69,18 +67,18 @@ def upload_file(
             supportsAllDrives=True,
         ).execute(num_retries=5)
 
-        # Fetch canonical metadata after granting public-reader access.
         metadata = drive.files().get(
             fileId=file_id,
             fields="id,name,size,webViewLink",
             supportsAllDrives=True,
         ).execute(num_retries=5)
+
         return metadata
+
     except GoogleDriveError:
         raise
     except Exception as exc:
         raise GoogleDriveError(f"Google Drive upload failed: {exc}") from exc
-
 
 def get_file_metadata(file_id: str, credentials_file: str) -> dict:
     """Read metadata for an existing Drive item accessible to the service account."""
