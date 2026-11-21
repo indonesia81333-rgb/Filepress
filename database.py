@@ -4,7 +4,6 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
-
 class UploadDatabase:
     def __init__(self, path: Path):
         self.path = path
@@ -32,7 +31,9 @@ class UploadDatabase:
                 )
                 """
             )
-            db.execute("CREATE INDEX IF NOT EXISTS idx_uploads_user ON uploads(user_id, id DESC)")
+            db.execute(
+                "CREATE INDEX IF NOT EXISTS idx_uploads_user ON uploads(user_id, id DESC)"
+            )
 
     def add_upload(
         self,
@@ -45,9 +46,11 @@ class UploadDatabase:
     ) -> None:
         with self._connect() as db:
             db.execute(
-                """INSERT INTO uploads
+                """
+                INSERT INTO uploads
                 (user_id, file_name, file_size, drive_file_id, filepress_id, share_url)
-                VALUES (?, ?, ?, ?, ?, ?)""",
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
                 (user_id, file_name, file_size, drive_file_id, filepress_id, share_url),
             )
 
@@ -57,7 +60,4 @@ class UploadDatabase:
                 "SELECT * FROM uploads WHERE user_id = ? ORDER BY id DESC LIMIT ?",
                 (user_id, limit),
             ).fetchall()
-        return [dict(row) for row in rows]
-
-
-# Database writes are small local transactions; each call opens its own connection.
+            return [dict(row) for row in rows]
